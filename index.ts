@@ -65,13 +65,19 @@ const pgTest = async () => {
 // NODES: Category and Product, Customer
 // RELATIONS: IS_IN, ADDED_TO_WISH_LIST, VIEWED, BOUGHT
 // obtain a list of notebooks that customers have viewed or added to their wish lists
-// recommend Products to Customers. If a Customer BOUGHT at least 2 items another Customer
+// recommend Products to Customers: If a Customer BOUGHT at least 2 items another Customer
 // has bought, recommend all items to the Customer the other customer has ADDED_TO_WISHLIST
 const neo4jTest = async () => {
   const driver = neo4j.driver("neo4j://localhost:7687");
   const session = driver.session();
-  const result = await session.run(neo4jSeed);
-  console.log({ result });
+  // await session.run(neo4jSeed);
+
+  // example: products Joe Baxton bought/viewed/wishlisted, that other customers also viewed/bought/wishlisted
+  const result = await session.run(`
+    MATCH (c:Customer)-[:BOUGHT|:VIEWED|:ADDED_TO_WISH_LIST]->(p:Product)<-[:BOUGHT|:VIEWED|:ADDED_TO_WISH_LIST]-(other:Customer {name: 'Joe Baxton'})
+    RETURN p;
+  `);
+  console.log(result.records.map((r) => r.get("p").properties));
 };
 
 (async () => {
