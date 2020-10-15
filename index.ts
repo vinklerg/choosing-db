@@ -70,7 +70,7 @@ const pgTest = async () => {
 const neo4jTest = async () => {
   const driver = neo4j.driver("neo4j://localhost:7687");
   const session = driver.session();
-  // await session.run(neo4jSeed);
+  await session.run(neo4jSeed);
 
   // example: products Joe Baxton bought/viewed/wishlisted, that other customers also viewed/bought/wishlisted
   const result = await session.run(`
